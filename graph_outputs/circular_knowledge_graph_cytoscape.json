@@ -1,0 +1,736 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "id": "1749726843164.pdf",
+          "label": "UNKNOWN_1749726843164.pdf",
+          "filename": "1749726843164.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1749727433120.PDF",
+          "label": "UNKNOWN_1749727433120.PDF",
+          "filename": "1749727433120.PDF",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1749727622982.PDF",
+          "label": "UNKNOWN_1749727622982.PDF",
+          "filename": "1749727622982.PDF",
+          "reference_count": 2
+        }
+      },
+      {
+        "data": {
+          "id": "1750938257248.pdf",
+          "label": "UNKNOWN_1750938257248.pdf",
+          "filename": "1750938257248.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1750948720659.pdf",
+          "label": "UNKNOWN_1750948720659.pdf",
+          "filename": "1750948720659.pdf",
+          "reference_count": 3
+        }
+      },
+      {
+        "data": {
+          "id": "1751286353420.pdf",
+          "label": "UNKNOWN_1751286353420.pdf",
+          "filename": "1751286353420.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1751451299336.pdf",
+          "label": "UNKNOWN_1751451299336.pdf",
+          "filename": "1751451299336.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1753268710217.pdf",
+          "label": "UNKNOWN_1753268710217.pdf",
+          "filename": "1753268710217.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1753783478291.pdf",
+          "label": "UNKNOWN_1753783478291.pdf",
+          "filename": "1753783478291.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1753786452703.pdf",
+          "label": "UNKNOWN_1753786452703.pdf",
+          "filename": "1753786452703.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1753787352730.pdf",
+          "label": "UNKNOWN_1753787352730.pdf",
+          "filename": "1753787352730.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1753876405008.pdf",
+          "label": "UNKNOWN_1753876405008.pdf",
+          "filename": "1753876405008.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1754395902917.pdf",
+          "label": "UNKNOWN_1754395902917.pdf",
+          "filename": "1754395902917.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1754563582805.pdf",
+          "label": "UNKNOWN_1754563582805.pdf",
+          "filename": "1754563582805.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1754644766404.pdf",
+          "label": "UNKNOWN_1754644766404.pdf",
+          "filename": "1754644766404.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1754651443956.pdf",
+          "label": "UNKNOWN_1754651443956.pdf",
+          "filename": "1754651443956.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1754653881911.pdf",
+          "label": "UNKNOWN_1754653881911.pdf",
+          "filename": "1754653881911.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1755059381537.pdf",
+          "label": "UNKNOWN_1755059381537.pdf",
+          "filename": "1755059381537.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1755513146159.pdf",
+          "label": "UNKNOWN_1755513146159.pdf",
+          "filename": "1755513146159.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1756210332904.pdf",
+          "label": "UNKNOWN_1756210332904.pdf",
+          "filename": "1756210332904.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1756462899734.pdf",
+          "label": "UNKNOWN_1756462899734.pdf",
+          "filename": "1756462899734.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1756745625835.pdf",
+          "label": "UNKNOWN_1756745625835.pdf",
+          "filename": "1756745625835.pdf",
+          "reference_count": 2
+        }
+      },
+      {
+        "data": {
+          "id": "1757069267217.pdf",
+          "label": "SEBI/HO/MIRSD/PODFATF/P/CIR/2025/123",
+          "filename": "1757069267217.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1757413322022.pdf",
+          "label": "UNKNOWN_1757413322022.pdf",
+          "filename": "1757413322022.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1757430792935.pdf",
+          "label": "UNKNOWN_1757430792935.pdf",
+          "filename": "1757430792935.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1757511993247.pdf",
+          "label": "UNKNOWN_1757511993247.pdf",
+          "filename": "1757511993247.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1757512058388.pdf",
+          "label": "UNKNOWN_1757512058388.pdf",
+          "filename": "1757512058388.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1758279862071.pdf",
+          "label": "SEBI/HO/CFD/CFD-PoD-1/P/CIR/2025/129",
+          "filename": "1758279862071.pdf",
+          "reference_count": 8
+        }
+      },
+      {
+        "data": {
+          "id": "1758282551734.pdf",
+          "label": "UNKNOWN_1758282551734.pdf",
+          "filename": "1758282551734.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1758794128066.pdf",
+          "label": "UNKNOWN_1758794128066.pdf",
+          "filename": "1758794128066.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1759232056254.pdf",
+          "label": "UNKNOWN_1759232056254.pdf",
+          "filename": "1759232056254.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1759928647818.pdf",
+          "label": "UNKNOWN_1759928647818.pdf",
+          "filename": "1759928647818.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1760356560260.pdf",
+          "label": "UNKNOWN_1760356560260.pdf",
+          "filename": "1760356560260.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1760525216783.pdf",
+          "label": "UNKNOWN_1760525216783.pdf",
+          "filename": "1760525216783.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1761301360689.pdf",
+          "label": "UNKNOWN_1761301360689.pdf",
+          "filename": "1761301360689.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1761825190101.pdf",
+          "label": "UNKNOWN_1761825190101.pdf",
+          "filename": "1761825190101.pdf",
+          "reference_count": 3
+        }
+      },
+      {
+        "data": {
+          "id": "1761826949663.pdf",
+          "label": "HO/38/12/11(1)2025 -MIRSD -POD / I/71/2025                                   October  30, 2025",
+          "filename": "1761826949663.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1761827106127.pdf",
+          "label": "HO/38/12/11(1)2025 -MIRSD -POD/  I/73/2025                                   October 30, 2025",
+          "filename": "1761827106127.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1761883473456.pdf",
+          "label": "HO/47/15/11(1)2025 -MRD -TPD1 / I/63/2025                                October 30, 2025",
+          "filename": "1761883473456.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1764072664415.pdf",
+          "label": "HO/17/11/12(3)2025 -DDHS -POD1 / I/144/ 2025                                 November 25, 2025",
+          "filename": "1764072664415.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1764072737631.pdf",
+          "label": "HO/17/11/12(3)2025 -DDHS -POD1 / I/145/2025                                          November 25, 2025",
+          "filename": "1764072737631.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1764072855448.pdf",
+          "label": "HO/17/11/12(3)2025 -DDHS -POD1 / I/146/2025                                 November 25, 2025",
+          "filename": "1764072855448.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1764304839944.pdf",
+          "label": "UNKNOWN_1764304839944.pdf",
+          "filename": "1764304839944.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1764328394148.pdf",
+          "label": "HO/24/13/12(1)2025 -IMD -POD -2/I/157/2025         November  28, 202 5",
+          "filename": "1764328394148.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1765194149704.pdf",
+          "label": "HO/13/19/13(2)2025 -ITD-1_VIAP /I/187/2025    December 08 , 2025",
+          "filename": "1765194149704.pdf",
+          "reference_count": 2
+        }
+      },
+      {
+        "data": {
+          "id": "1765194546052.pdf",
+          "label": "HO/19/34/11(5)2025 -AFD-POD1/I/ 188/2025                          December  08, 2025",
+          "filename": "1765194546052.pdf",
+          "reference_count": 2
+        }
+      },
+      {
+        "data": {
+          "id": "1765366958310.pdf",
+          "label": "HO/38/30/12(1)2025 -MIRSD -SEC-FATF                              December  10, 2025",
+          "filename": "1765366958310.pdf",
+          "reference_count": 0
+        }
+      },
+      {
+        "data": {
+          "id": "1765451323097.pdf",
+          "label": "HO/42/36/12(4)2025 -OIAE -IAD3                                                  December  11, 2025",
+          "filename": "1765451323097.pdf",
+          "reference_count": 1
+        }
+      },
+      {
+        "data": {
+          "id": "1765535283954.pdf",
+          "label": "HO/47/12/11(5)2025 -MRD -POD3/I/196/2025",
+          "filename": "1765535283954.pdf",
+          "reference_count": 1
+        }
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "id": "e0",
+          "source": "1749727433120.PDF",
+          "target": "CIR/2021/672",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e1",
+          "source": "1749727622982.PDF",
+          "target": "CIR/2021/672",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e2",
+          "source": "1749727622982.PDF",
+          "target": "CIR/2021/690",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e3",
+          "source": "1750948720659.pdf",
+          "target": "CIR/2025/37",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e4",
+          "source": "1750948720659.pdf",
+          "target": "CIR/2025/18",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e5",
+          "source": "1750948720659.pdf",
+          "target": "CIR/2025/93",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e6",
+          "source": "1751286353420.pdf",
+          "target": "CIR/2024/113",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e7",
+          "source": "1753268710217.pdf",
+          "target": "CIR/2025/105",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e8",
+          "source": "1753786452703.pdf",
+          "target": "CIR/2025/0000013",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e9",
+          "source": "1753876405008.pdf",
+          "target": "CIR/2025/110",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e10",
+          "source": "1754395902917.pdf",
+          "target": "CIR/2024/168",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e11",
+          "source": "1754563582805.pdf",
+          "target": "HO/MIRSD/MIRSD2/CIR/P/2017/73",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e12",
+          "source": "1754651443956.pdf",
+          "target": "CIR/2025/111",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e13",
+          "source": "1755059381537.pdf",
+          "target": "CIR/2025/116",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e14",
+          "source": "1756462899734.pdf",
+          "target": "CIR/2025/111",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e15",
+          "source": "1756745625835.pdf",
+          "target": "CIR/2025/79",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e16",
+          "source": "1756745625835.pdf",
+          "target": "HO/MRD/TPD/CIR/P/2025",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e17",
+          "source": "1757413322022.pdf",
+          "target": "CIR/2025/125",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e18",
+          "source": "1758279862071.pdf",
+          "target": "CIR/2025/129",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e19",
+          "source": "1758279862071.pdf",
+          "target": "HO/CFD/PoD-1/P/CIR/2023/196",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e20",
+          "source": "1758279862071.pdf",
+          "target": "CIR/2023/196",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e21",
+          "source": "1758279862071.pdf",
+          "target": "CIR/2022/120",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e22",
+          "source": "1758279862071.pdf",
+          "target": "HO/CFD/CFD-PoD-1/P/CIR/2025/129",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e23",
+          "source": "1758279862071.pdf",
+          "target": "SEBI/HO/CFD/PoD-1/P/CIR/2022/120",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e24",
+          "source": "1758279862071.pdf",
+          "target": "SEBI/HO/CFD/PoD-1/P/CIR/2023/196",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e25",
+          "source": "1758279862071.pdf",
+          "target": "HO/CFD/PoD-1/P/CIR/2022/120",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e26",
+          "source": "1758794128066.pdf",
+          "target": "CIR/2025/111",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e27",
+          "source": "1759928647818.pdf",
+          "target": "CIR/2024/172",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e28",
+          "source": "1760356560260.pdf",
+          "target": "CIR/2025/93",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e29",
+          "source": "1761301360689.pdf",
+          "target": "HO/IMD/RAC/CIR/P/202",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e30",
+          "source": "1761825190101.pdf",
+          "target": "CIR/2025/58",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e31",
+          "source": "1761825190101.pdf",
+          "target": "HO/47/11/12",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e32",
+          "source": "1761825190101.pdf",
+          "target": "CIR/2024/172",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e33",
+          "source": "1761883473456.pdf",
+          "target": "CIR/2025/79",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e34",
+          "source": "1764072664415.pdf",
+          "target": "CIR/2025/117",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e35",
+          "source": "1764072737631.pdf",
+          "target": "CIR/2025/117",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e36",
+          "source": "1765194149704.pdf",
+          "target": "CIR/2025/13",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e37",
+          "source": "1765194149704.pdf",
+          "target": "CIR/2025/12",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e38",
+          "source": "1765194546052.pdf",
+          "target": "HO/IMD/DF6/CIR/P/2020/24",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e39",
+          "source": "1765194546052.pdf",
+          "target": "SEBI/HO/IMD/DF6/CIR/P/2020/24",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e40",
+          "source": "1765451323097.pdf",
+          "target": "CIR/2025/110",
+          "label": "references"
+        }
+      },
+      {
+        "data": {
+          "id": "e41",
+          "source": "1765535283954.pdf",
+          "target": "CIR/2024/162",
+          "label": "references"
+        }
+      }
+    ]
+  }
+}
