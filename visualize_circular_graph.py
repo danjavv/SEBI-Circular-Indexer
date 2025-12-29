@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-SEBI Circular Knowledge Graph Visualizer
-Reads the knowledge graph JSON and creates visual representations
-"""
 
 import json
 from pathlib import Path
@@ -13,7 +9,6 @@ import matplotlib.patches as mpatches
 
 
 def load_graph_from_json(json_file: str) -> nx.DiGraph:
-    """Load knowledge graph from JSON file into NetworkX graph"""
     print(f"Loading graph from {json_file}...")
 
     with open(json_file, 'r', encoding='utf-8') as f:
@@ -54,7 +49,6 @@ def load_graph_from_json(json_file: str) -> nx.DiGraph:
 
 
 def visualize_full_graph(G: nx.DiGraph, output_file: str):
-    """Create a visualization of the full knowledge graph"""
     print("Creating full graph visualization...")
 
     # Set up the plot
@@ -133,12 +127,11 @@ def visualize_full_graph(G: nx.DiGraph, output_file: str):
     plt.axis('off')
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
-    print(f"  ✅ Saved: {output_file}")
+    print(f"  Saved: {output_file}")
     plt.close()
 
 
 def visualize_top_circulars(G: nx.DiGraph, output_file: str, top_n: int = 15):
-    """Create a focused visualization of the most connected circulars"""
     print(f"Creating top {top_n} circulars visualization...")
 
     # Get nodes with highest degree
@@ -214,12 +207,11 @@ def visualize_top_circulars(G: nx.DiGraph, output_file: str, top_n: int = 15):
     plt.axis('off')
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
-    print(f"  ✅ Saved: {output_file}")
+    print(f"  Saved: {output_file}")
     plt.close()
 
 
 def create_statistics_report(G: nx.DiGraph, output_file: str):
-    """Create a detailed statistics report with visualizations"""
     print("Creating statistics report...")
 
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
@@ -278,12 +270,11 @@ def create_statistics_report(G: nx.DiGraph, output_file: str):
 
     plt.tight_layout()
     plt.savefig(output_file, dpi=300, bbox_inches='tight', facecolor='white')
-    print(f"  ✅ Saved: {output_file}")
+    print(f"  Saved: {output_file}")
     plt.close()
 
 
 def print_network_metrics(G: nx.DiGraph):
-    """Print detailed network analysis metrics"""
     print("\n" + "=" * 80)
     print("NETWORK ANALYSIS METRICS")
     print("=" * 80)
@@ -324,8 +315,6 @@ def print_network_metrics(G: nx.DiGraph):
 
 
 def main():
-    """Main function to visualize the knowledge graph"""
-
     print("=" * 80)
     print("SEBI Circular Knowledge Graph Visualizer")
     print("=" * 80)
@@ -337,7 +326,7 @@ def main():
 
     # Check if input file exists
     if not Path(json_file).exists():
-        print(f"❌ Error: Input file '{json_file}' not found!")
+        print(f"Error: Input file '{json_file}' not found!")
         print("Please run 'python3 circular_knowledge_graph.py' first to generate the graph.")
         return
 
@@ -345,7 +334,7 @@ def main():
     G = load_graph_from_json(json_file)
 
     if G.number_of_nodes() == 0:
-        print("❌ Error: Graph is empty!")
+        print("Error: Graph is empty!")
         return
 
     # Generate visualizations
@@ -362,12 +351,12 @@ def main():
     print_network_metrics(G)
 
     print("\n" + "=" * 80)
-    print("✅ Visualization complete!")
+    print("Visualization complete!")
     print("=" * 80)
     print(f"\nOutputs saved to '{output_dir}/':")
-    print(f"  • graph_visualization_full.png (Full network)")
-    print(f"  • graph_visualization_top_circulars.png (Top connected circulars)")
-    print(f"  • graph_statistics.png (Statistical analysis)")
+    print(f"  - graph_visualization_full.png (Full network)")
+    print(f"  - graph_visualization_top_circulars.png (Top connected circulars)")
+    print(f"  - graph_statistics.png (Statistical analysis)")
     print()
 
 

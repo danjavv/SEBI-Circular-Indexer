@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Build knowledge graph from SEBI circular PDFs"""
 
 import re
 import json

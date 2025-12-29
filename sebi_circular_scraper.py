@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-SEBI Circular Scraper
-Extracts circular titles and their reference numbers from SEBI website
-Supports pagination to fetch circulars from all pages
-""" 
 
 import requests
 from bs4 import BeautifulSoup
@@ -18,12 +13,6 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.chrome.options import Options
 
 def setup_driver() -> webdriver.Chrome:
-    """
-    Setup Chrome WebDriver with headless options
-
-    Returns:
-        Configured Chrome WebDriver instance
-    """
     chrome_options = Options()
     chrome_options.add_argument('--headless')  # Run in background
     chrome_options.add_argument('--no-sandbox')
@@ -37,15 +26,6 @@ def setup_driver() -> webdriver.Chrome:
 
 
 def extract_circulars_from_page(driver: webdriver.Chrome) -> List[Tuple[str, str]]:
-    """
-    Extract circular links from the current page
-
-    Args:
-        driver: Selenium WebDriver instance
-
-    Returns:
-        List of tuples (title, url)
-    """
     circular_links = []
 
     # Wait for page to load
@@ -70,16 +50,6 @@ def extract_circulars_from_page(driver: webdriver.Chrome) -> List[Tuple[str, str
 
 
 def get_circular_links_all_pages(base_url: str, max_pages: Optional[int] = None) -> List[Tuple[str, str]]:
-    """
-    Fetch circular links and titles from all pages using Selenium
-
-    Args:
-        base_url: The SEBI circulars listing URL
-        max_pages: Maximum number of pages to scrape (None for all pages)
-
-    Returns:
-        List of tuples (title, url)
-    """
     print("Initializing browser automation...")
     driver = setup_driver()
 
@@ -144,15 +114,6 @@ def get_circular_links_all_pages(base_url: str, max_pages: Optional[int] = None)
 
 
 def extract_circular_number(url: str) -> str:
-    """
-    Extract circular number from individual circular page
-
-    Args:
-        url: URL of the circular detail page
-
-    Returns:
-        Circular reference number or "Not Found"
-    """
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -203,8 +164,6 @@ def extract_circular_number(url: str) -> str:
 
 
 def main():
-    """Main function to scrape SEBI circulars"""
-
     base_url = "https://www.sebi.gov.in/sebiweb/home/HomeAction.do?doListing=yes&sid=1&ssid=7&smid=0"
 
     # Set max_pages to limit scraping (None for all pages, or specify a number like 5)

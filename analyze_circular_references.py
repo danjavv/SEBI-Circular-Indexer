@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Analyze circular references using the knowledge graph"""
 
 import json
 import re
@@ -10,8 +9,6 @@ from collections import defaultdict, deque
 
 
 class PDFCircularExtractor:
-    """Extracts circular references from a PDF document"""
-
     def __init__(self, pdf_path: str):
         self.pdf_path = pdf_path
         self.filename = Path(pdf_path).name
@@ -19,7 +16,6 @@ class PDFCircularExtractor:
         self.circular_number = ""
 
     def extract_text(self) -> str:
-        """Extract text content from PDF"""
         try:
             with open(self.pdf_path, 'rb') as file:
                 pdf_reader = PyPDF2.PdfReader(file)
@@ -33,11 +29,10 @@ class PDFCircularExtractor:
                 return self.text_content
 
         except Exception as e:
-            print(f"  ❌ Error extracting text: {e}")
+            print(f"  Error extracting text: {e}")
             return ""
 
     def get_circular_number(self) -> str:
-        """Extract the circular number of the current PDF"""
         patterns = [
             r'CIRCULAR\s*\n\s*([A-Z]{2}/\d+/\d+/\d+[^\n]+)',
             r'^([A-Z]{2}/\d+/\d+/\d+[^\n]+)',
@@ -59,7 +54,6 @@ class PDFCircularExtractor:
         return f"UNKNOWN_{self.filename}"
 
     def extract_circular_references(self) -> Set[str]:
-        """Extract all references to other SEBI circulars"""
         references = set()
 
         # Normalize text
@@ -111,8 +105,6 @@ class PDFCircularExtractor:
 
 
 class KnowledgeGraphAnalyzer:
-    """Analyzes circular references using the knowledge graph"""
-
     def __init__(self, graph_file: str):
         self.graph_file = graph_file
         self.nodes = {}
@@ -121,7 +113,6 @@ class KnowledgeGraphAnalyzer:
         self.load_graph()
 
     def load_graph(self):
-        """Load the knowledge graph from JSON"""
         try:
             with open(self.graph_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
@@ -143,12 +134,11 @@ class KnowledgeGraphAnalyzer:
                     self.circular_to_node[circ_no] = node_id
 
         except FileNotFoundError:
-            print(f"❌ Error: Graph file '{self.graph_file}' not found!")
+            print(f"Error: Graph file '{self.graph_file}' not found!")
             print("Please run 'python3 circular_knowledge_graph.py' first.")
             raise
 
     def find_direct_references(self, circular_references: Set[str]) -> Dict[str, Dict]:
-        """Find direct references and their details from the graph"""
         direct_refs = {}
 
         for ref in circular_references:
@@ -196,7 +186,6 @@ class KnowledgeGraphAnalyzer:
         return direct_refs
 
     def _get_node_references(self, node_id: str) -> List[str]:
-        """Get all references made by a node"""
         refs = []
         for edge in self.edges:
             if edge['source'] == node_id:
@@ -204,7 +193,6 @@ class KnowledgeGraphAnalyzer:
         return refs
 
     def _fuzzy_match_reference(self, ref: str) -> List[str]:
-        """Try to fuzzy match a reference to nodes in the graph"""
         ref_normalized = ref.replace(' ', '').upper()
         matches = []
 
@@ -216,7 +204,6 @@ class KnowledgeGraphAnalyzer:
         return matches
 
     def find_indirect_references(self, direct_refs: Dict[str, Dict], max_depth: int = 5) -> Dict[int, Set[str]]:
-        """Find indirect references up to max_depth levels using BFS"""
         indirect_by_level = defaultdict(set)
         visited = set()
         queue = deque()
@@ -258,14 +245,12 @@ class KnowledgeGraphAnalyzer:
         return dict(indirect_by_level)
 
     def get_reference_details(self, ref: str) -> Dict:
-        """Get details about a reference"""
         if ref in self.nodes:
             return self.nodes[ref]
         return {'circular_no': ref, 'filename': 'Not in graph', 'reference_count': 0}
 
 
 def print_tree_structure(ref: str, level: int = 0, prefix: str = "", is_last: bool = True):
-    """Print reference in tree structure"""
     connector = "└── " if is_last else "├── "
     print(f"{prefix}{connector}{ref}")
     return prefix + ("    " if is_last else "│   ")

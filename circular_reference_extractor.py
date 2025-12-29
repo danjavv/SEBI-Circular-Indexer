@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-SEBI Circular Reference Extractor
-Reads a SEBI circular PDF and extracts references to other circulars,
-then matches them against a database of known circulars
-"""
 
 import re
 from typing import List, Dict, Tuple, Set
@@ -12,14 +7,11 @@ from pathlib import Path
 
 
 class CircularDatabase:
-    """Manages the database of circulars from the text file"""
-
     def __init__(self, database_file: str):
         self.circulars: List[Dict[str, str]] = []
         self.load_database(database_file)
 
     def load_database(self, database_file: str):
-        """Load circular data from the generated text file"""
         print(f"Loading circular database from {database_file}...")
 
         try:
@@ -48,7 +40,6 @@ class CircularDatabase:
             self.circulars = []
 
     def search(self, reference: str) -> List[Dict[str, str]]:
-        """Search for circulars matching a reference pattern"""
         matches = []
 
         # Normalize the reference for searching
@@ -65,15 +56,12 @@ class CircularDatabase:
 
 
 class PDFCircularExtractor:
-    """Extracts circular references from a PDF document"""
-
     def __init__(self, pdf_path: str):
         self.pdf_path = pdf_path
         self.text_content = ""
         self.circular_number = ""
 
     def extract_text(self) -> str:
-        """Extract text content from PDF"""
         print(f"Extracting text from {self.pdf_path}...")
 
         try:
@@ -95,7 +83,6 @@ class PDFCircularExtractor:
         return self.text_content
 
     def get_circular_number(self) -> str:
-        """Extract the circular number of the current PDF"""
         # Pattern to match circular number at the top of the document
         # Look for pattern right after "CIRCULAR" heading
         patterns = [
@@ -117,7 +104,6 @@ class PDFCircularExtractor:
         return "Unknown"
 
     def extract_circular_references(self) -> Set[str]:
-        """Extract all references to other SEBI circulars"""
         print("Extracting circular references...")
 
         references = set()
@@ -186,8 +172,6 @@ class PDFCircularExtractor:
 
 
 def main():
-    """Main function to extract and match circular references"""
-
     # Configuration
     pdf_file = "1765535283954.pdf"
     database_file = "sebi_circular_numbers.txt"
