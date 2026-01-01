@@ -320,18 +320,22 @@ def main():
     print("=" * 80)
     print()
 
+    # Get the project root directory (parent of scripts directory)
+    script_dir = Path(__file__).parent
+    project_root = script_dir.parent
+
     # Configuration
-    json_file = "graph_outputs/circular_knowledge_graph.json"
-    output_dir = Path("graph_outputs")
+    json_file = project_root / "graph_outputs" / "circular_knowledge_graph.json"
+    output_dir = project_root / "graph_outputs"
 
     # Check if input file exists
-    if not Path(json_file).exists():
+    if not json_file.exists():
         print(f"Error: Input file '{json_file}' not found!")
-        print("Please run 'python3 circular_knowledge_graph.py' first to generate the graph.")
+        print("Please run 'python3 scripts/circular_knowledge_graph.py' first to generate the graph.")
         return
 
     # Load graph
-    G = load_graph_from_json(json_file)
+    G = load_graph_from_json(str(json_file))
 
     if G.number_of_nodes() == 0:
         print("Error: Graph is empty!")

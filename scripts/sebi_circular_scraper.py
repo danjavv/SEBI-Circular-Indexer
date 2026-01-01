@@ -4,6 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import time
+import os
 from typing import Dict, List, Tuple, Optional
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -11,6 +12,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.chrome.options import Options
+from dotenv import load_dotenv
+from anthropic import Anthropic
+
+# Load environment variables
+load_dotenv()
+
+# Configure Claude API
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+if not ANTHROPIC_API_KEY:
+    raise ValueError("ANTHROPIC_API_KEY not found in .env file")
+client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 def setup_driver() -> webdriver.Chrome:
     chrome_options = Options()
@@ -123,40 +135,41 @@ def extract_circular_number(url: str) -> str:
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
-
-        # Common patterns for SEBI circular numbers
-        patterns = [
-            r'SEBI/HO/[A-Z0-9/-]+/\d+',  # Standard SEBI format
-            r'HO/[A-Z0-9/-]+/\d+',  # Without SEBI prefix
-            r'[A-Z]{2,}/[A-Z0-9/-]+/\d+',  # Other formats
-            r'No\.\s*([A-Z0-9/-]+/\d+)',  # With "No." prefix
-            r'Ref\.\s*No\.\s*:?\s*([A-Z0-9/-]+/\d+)',  # With "Ref. No."
-            r'Circular\s*No\.\s*:?\s*([A-Z0-9/-]+/\d+)',  # With "Circular No."
-        ]
-
         text_content = soup.get_text()
 
-        # Try each pattern
-        for pattern in patterns:
-            matches = re.findall(pattern, text_content)
-            if matches:
-                # Return the first match
-                return matches[0] if isinstance(matches[0], str) else matches[0]
-
-        # If no pattern matches, look for common indicators
-        # Search in first 2000 characters where circular numbers usually appear
+        # Extract first 2000 characters where circular numbers usually appear
         preview = text_content[:2000]
 
-        # Look for lines containing "Circular" or "Reference"
-        lines = preview.split('\n')
-        for line in lines:
-            if any(keyword in line for keyword in ['Circular No', 'Ref. No', 'Reference No', 'SEBI/HO']):
-                # Extract anything that looks like a reference number
-                ref_match = re.search(r'[A-Z]{2,}[/][A-Z0-9/()-]+/\d+', line)
-                if ref_match:
-                    return ref_match.group(0)
+        # Use Claude to extract circular number
+        prompt = f"""Extract the SEBI circular number from the following text.
+SEBI circular numbers typically follow formats like:
+- SEBI/HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- [DEPT]/[TYPE]/YYYY/NNN
 
-        return "Not Found"
+Look for phrases like "Circular No.", "Ref. No.", "Reference No.", or similar indicators.
+
+Return ONLY the circular number itself, nothing else. If you cannot find a circular number, return exactly "Not Found".
+
+Text:
+{preview}
+
+Circular Number:"""
+
+        response = client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=100,
+            messages=[
+                {"role": "user", "content": prompt}
+            ]
+        )
+        circular_number = response.content[0].text.strip()
+
+        # Validate the response
+        if not circular_number or len(circular_number) > 100:
+            return "Not Found"
+
+        return circular_number
 
     except Exception as e:
         print(f"Error extracting from {url}: {str(e)}")

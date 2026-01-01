@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
 
 import json
+import os
 import re
 from typing import List, Dict, Set, Tuple
 from pathlib import Path
 import PyPDF2
 from collections import defaultdict, deque
+from dotenv import load_dotenv
+from anthropic import Anthropic
+
+# Load environment variables
+load_dotenv()
+
+# Configure Anthropic API
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+if not ANTHROPIC_API_KEY:
+    raise ValueError("ANTHROPIC_API_KEY not found in .env file")
+client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
 class PDFCircularExtractor:
@@ -33,72 +45,165 @@ class PDFCircularExtractor:
             return ""
 
     def get_circular_number(self) -> str:
-        patterns = [
-            r'CIRCULAR\s*\n\s*([A-Z]{2}/\d+/\d+/\d+[^\n]+)',
-            r'^([A-Z]{2}/\d+/\d+/\d+[^\n]+)',
-            r'Circular\s+No\.?\s*:?\s*([A-Z]{2,}/[A-Z0-9/-]+/\d+)',
-            r'(HO/\d+/\d+/\d+[^\n]*)',
-            r'SEBI/HO/[A-Z]+(?:-[A-Z]+)?(?:/[A-Z0-9-]+)*/(?:P/)?CIR/\d{4}/\d+',
-        ]
-
         # Check first 1000 characters for circular number
         header = self.text_content[:1000]
 
-        for pattern in patterns:
-            match = re.search(pattern, header, re.MULTILINE | re.IGNORECASE)
-            if match:
-                self.circular_number = match.group(1).strip() if match.groups() else match.group(0).strip()
-                return self.circular_number
+        try:
+            # Use Claude to extract circular number
+            prompt = f"""Extract the SEBI circular number from the following text, which is from the header of a PDF document.
+SEBI circular numbers typically follow formats like:
+- SEBI/HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- [DEPT]/[TYPE]/YYYY/NNN
 
-        # If no pattern matches, use filename
-        return f"UNKNOWN_{self.filename}"
+The circular number is usually near the top of the document, possibly after the word "CIRCULAR".
+
+Return ONLY the circular number itself, nothing else. If you cannot find a circular number, return exactly "Unknown".
+
+Text:
+{header}
+
+Circular Number:"""
+
+            response = client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=100,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+
+            raw_response = response.content[0].text.strip()
+
+            # Extract just the circular number from Claude's response
+            # Remove common explanatory phrases using regex
+            cleaned = raw_response
+
+            # Remove common prefixes
+            patterns = [
+                r'^.*?circular\s+number\s+(?:is\s+|extracted.*?is\s*)?:?\s*',
+                r'^.*?circular\s+number\s*:?\s*',
+                r'^Here\s+is\s+.*?:?\s*',
+            ]
+
+            for pattern in patterns:
+                cleaned = re.sub(pattern, '', cleaned, flags=re.IGNORECASE)
+                if cleaned != raw_response:
+                    break
+
+            # Take the first line if multiline
+            cleaned = cleaned.split('\n')[0].strip()
+
+            # Remove trailing punctuation
+            cleaned = cleaned.rstrip('.,;:')
+
+            # Remove ALL spaces from circular number for consistency
+            cleaned = cleaned.replace(' ', '')
+
+            self.circular_number = cleaned
+
+            # Validate the response
+            if not self.circular_number or len(self.circular_number) > 150 or self.circular_number == "Unknown":
+                return f"UNKNOWN_{self.filename}"
+
+            return self.circular_number
+
+        except Exception as e:
+            print(f"  Error extracting circular number with Claude: {e}")
+            return f"UNKNOWN_{self.filename}"
 
     def extract_circular_references(self) -> Set[str]:
         references = set()
 
-        # Normalize text
-        normalized_text = re.sub(r'\s+', ' ', self.text_content)
+        try:
+            # Use Claude to extract circular references
+            prompt = f"""Extract ALL SEBI circular reference numbers mentioned in the following document text.
 
-        # Pattern 1: Full circular reference with "Circular No."
-        pattern1 = r'(?:SEBI\s+)?Circular\s+No\.?\s+(SEBI/HO/[A-Z0-9]+(?:/[A-Z0-9-]+)+/\d+)'
-        references.update(re.findall(pattern1, normalized_text, re.IGNORECASE))
+SEBI circular numbers typically follow formats like:
+- SEBI/HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- [DEPT]/[TYPE]/CIR/YYYY/NNN
+- CIR/YYYY/NNN
 
-        # Pattern 2: Standard SEBI/HO/.../CIR/YYYY/NNN format
-        pattern2 = r'SEBI/HO/[A-Z0-9]+(?:/[A-Z0-9-]+)*/(?:P/)?CIR/\d{4}/\d+'
-        references.update(re.findall(pattern2, normalized_text, re.IGNORECASE))
+Look for circular references that appear:
+- After phrases like "Circular No.", "Ref. No.", "Reference No."
+- In phrases like "dated [date]" following a circular number
+- In "Gazette Notification No."
+- References to other circulars in paragraphs
+- Anywhere in the text where a circular number appears
 
-        # Pattern 3: Short form with HO/
-        pattern3 = r'(?:Circular\s+No\.?\s*:?\s*)?(HO/[A-Z0-9]+(?:/[A-Z0-9-]+)+/\d+)'
-        references.update(re.findall(pattern3, normalized_text, re.IGNORECASE))
+Return ONLY a JSON array of circular numbers found, one per line.
+If no circular references are found, return an empty array: []
 
-        # Pattern 4: Dated references
-        pattern4 = r'Circular\s+No\.?\s+([A-Z]{2,}/[A-Z0-9/-]+/\d+)\s+dated'
-        references.update(re.findall(pattern4, normalized_text, re.IGNORECASE))
+Example format:
+["SEBI/HO/DDHS/DDHS/CIR/P/2024/123", "HO/MIRSD/CRADT/CIR/P/2024/45", "CIR/2023/78"]
 
-        # Pattern 5: Gazette notifications
-        pattern5 = r'Gazette\s+Notifications?\s+No\.?\s+([A-Z]{2,}/[A-Z0-9/-]+/\d+)'
-        references.update(re.findall(pattern5, normalized_text, re.IGNORECASE))
+Text:
+{self.text_content}
 
-        # Pattern 6: Paragraph references
-        pattern6 = r'(?:paragraph|para)\s+[\d.]+\s+of\s+(?:SEBI\s+)?Circular\s+(?:No\.?\s*)?([A-Z]{2,}/[A-Z0-9/-]+/\d+)'
-        references.update(re.findall(pattern6, normalized_text, re.IGNORECASE))
+Circular References (JSON array):"""
 
-        # Pattern 7: General SEBI circular number
-        pattern7 = r'\b(SEBI/HO/[A-Z]+(?:-[A-Z]+)?(?:/[A-Z0-9-]+)*/(?:P/)?CIR/\d{4}/\d+)\b'
-        references.update(re.findall(pattern7, normalized_text, re.IGNORECASE))
+            response = client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=2048,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
 
-        # Pattern 8: Standalone CIR/YYYY/NNN
-        pattern8 = r'\b(CIR/\d{4}/\d+)\b'
-        references.update(re.findall(pattern8, normalized_text))
+            response_text = response.content[0].text.strip()
 
-        # Filter out self-references
+            # Parse the JSON response
+            # Sometimes the model might wrap it in markdown code blocks or add explanatory text
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            else:
+                # Look for JSON array in the response (starts with [ and ends with ])
+                start_idx = response_text.find('[')
+                end_idx = response_text.rfind(']')
+                if start_idx != -1 and end_idx != -1:
+                    response_text = response_text[start_idx:end_idx+1]
+
+            try:
+                circular_refs = json.loads(response_text)
+                if isinstance(circular_refs, list):
+                    # Remove spaces from all references for consistency
+                    normalized_refs = [ref.replace(' ', '') for ref in circular_refs]
+                    references.update(normalized_refs)
+                else:
+                    print("  Warning: Claude response was not a list")
+            except json.JSONDecodeError as je:
+                print(f"  Warning: Error parsing Claude JSON response: {je}")
+
+        except Exception as e:
+            print(f"  Error extracting circular references with Claude: {e}")
+
+        # Filter out self-references (only exact matches)
         filtered_references = set()
-        current_circ_short = self.circular_number.split('(')[0].split('-')[0].strip() if self.circular_number else ""
+
+        # Normalize current circular number for comparison
+        # Remove all non-alphanumeric characters for accurate matching
+        def normalize_circular_no(circ_no):
+            if not circ_no:
+                return ""
+            # Keep only alphanumeric characters
+            normalized = re.sub(r'[^A-Z0-9]', '', circ_no.upper())
+            return normalized
+
+        current_circ_normalized = normalize_circular_no(self.circular_number)
 
         for ref in references:
-            # Skip self-references
-            if current_circ_short and (current_circ_short in ref or ref in current_circ_short):
-                continue
+            # Normalize reference for comparison
+            ref_normalized = normalize_circular_no(ref)
+
+            # Skip only if it's an exact match (same circular number)
+            # This allows references to other circulars from the same department
+            if current_circ_normalized and current_circ_normalized == ref_normalized:
+                continue  # Skip self-reference
+
+            # Add all non-self references
             filtered_references.add(ref)
 
         return filtered_references
@@ -193,12 +298,19 @@ class KnowledgeGraphAnalyzer:
         return refs
 
     def _fuzzy_match_reference(self, ref: str) -> List[str]:
-        ref_normalized = ref.replace(' ', '').upper()
+        # Normalize by keeping only alphanumeric characters (same as self-reference filtering)
+        def normalize(circ_no):
+            if not circ_no:
+                return ""
+            return re.sub(r'[^A-Z0-9]', '', circ_no.upper())
+
+        ref_normalized = normalize(ref)
         matches = []
 
         for node_id, node in self.nodes.items():
-            circ_no = node.get('circular_no', '').replace(' ', '').upper()
-            if ref_normalized in circ_no or circ_no in ref_normalized:
+            circ_no = node.get('circular_no', '')
+            circ_no_normalized = normalize(circ_no)
+            if ref_normalized in circ_no_normalized or circ_no_normalized in ref_normalized:
                 matches.append(node_id)
 
         return matches

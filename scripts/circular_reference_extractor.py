@@ -1,9 +1,22 @@
 #!/usr/bin/env python3
 
 import re
+import os
+import json
 from typing import List, Dict, Tuple, Set
 import PyPDF2
 from pathlib import Path
+from dotenv import load_dotenv
+from anthropic import Anthropic
+
+# Load environment variables
+load_dotenv()
+
+# Configure Anthropic API
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+if not ANTHROPIC_API_KEY:
+    raise ValueError("ANTHROPIC_API_KEY not found in .env file")
+client = Anthropic(api_key=ANTHROPIC_API_KEY)
 
 
 class CircularDatabase:
@@ -18,7 +31,8 @@ class CircularDatabase:
             with open(database_file, 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # Parse the file to extract circular entries
+            # Parse the file to extract circular entries using regex
+            # This is more reliable for structured data than LLM parsing
             # Pattern: numbered entry followed by title and circular number
             pattern = r'\d+\.\s+(.*?)\n\s+Circular No:\s+(.*?)(?=\n\n|\n\d+\.|\Z)'
             matches = re.findall(pattern, content, re.DOTALL)
@@ -83,89 +97,148 @@ class PDFCircularExtractor:
         return self.text_content
 
     def get_circular_number(self) -> str:
-        # Pattern to match circular number at the top of the document
-        # Look for pattern right after "CIRCULAR" heading
-        patterns = [
-            r'CIRCULAR\s*\n\s*([A-Z]{2}/\d+/\d+/\d+[^\n]+)',  # After CIRCULAR heading
-            r'^([A-Z]{2}/\d+/\d+/\d+[^\n]+)',  # At start of line
-            r'Circular\s+No\.?\s*:?\s*([A-Z]{2,}/[A-Z0-9/-]+/\d+)',
-            r'(HO/\d+/\d+/\d+[^\n]*)',  # HO format
-        ]
-
         # Check first 500 characters for circular number
         header = self.text_content[:500]
 
-        for pattern in patterns:
-            match = re.search(pattern, header, re.MULTILINE | re.IGNORECASE)
-            if match:
-                self.circular_number = match.group(1).strip()
-                return self.circular_number
+        try:
+            # Use Claude to extract circular number
+            prompt = f"""Extract the SEBI circular number from the following text, which is from the header of a PDF document.
+SEBI circular numbers typically follow formats like:
+- SEBI/HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- [DEPT]/[TYPE]/YYYY/NNN
 
-        return "Unknown"
+The circular number is usually near the top of the document, possibly after the word "CIRCULAR".
+
+Return ONLY the circular number itself, nothing else. If you cannot find a circular number, return exactly "Unknown".
+
+Text:
+{header}
+
+Circular Number:"""
+
+            response = client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=100,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
+
+            raw_response = response.content[0].text.strip()
+
+            # Extract just the circular number from Claude's response
+            # Remove common explanatory phrases using regex
+            import re
+
+            # Remove common prefixes (more comprehensive patterns)
+            cleaned = raw_response
+
+            # Remove various forms of explanatory text
+            patterns = [
+                r'^.*?circular\s+number\s+(?:is\s+|extracted.*?is\s*)?:?\s*',  # "The circular number is" or "extracted from ... is"
+                r'^.*?circular\s+number\s*:?\s*',  # General "circular number:"
+                r'^Here\s+is\s+.*?:?\s*',  # "Here is the..."
+            ]
+
+            for pattern in patterns:
+                cleaned = re.sub(pattern, '', cleaned, flags=re.IGNORECASE)
+                if cleaned != raw_response:
+                    break  # Stop after first match
+
+            # Take the first line if multiline
+            cleaned = cleaned.split('\n')[0].strip()
+
+            # Remove trailing punctuation
+            cleaned = cleaned.rstrip('.,;:')
+
+            # Remove ALL spaces from circular number for consistency
+            cleaned = cleaned.replace(' ', '')
+
+            self.circular_number = cleaned
+
+            # Validate the response
+            if not self.circular_number or len(self.circular_number) > 150:
+                self.circular_number = "Unknown"
+
+            return self.circular_number
+
+        except Exception as e:
+            print(f"Error extracting circular number with Claude: {e}")
+            return "Unknown"
 
     def extract_circular_references(self) -> Set[str]:
         print("Extracting circular references...")
 
         references = set()
 
-        # Normalize text - remove excessive whitespace while preserving structure
-        normalized_text = re.sub(r'\s+', ' ', self.text_content)
+        try:
+            # Use Claude to extract circular references
+            prompt = f"""Extract ALL SEBI circular reference numbers mentioned in the following document text.
 
-        # Pattern 1: Full circular reference with SEBI/HO/... (most specific)
-        pattern1 = r'(?:SEBI\s+)?Circular\s+No\.?\s+(SEBI/HO/[A-Z0-9]+(?:/[A-Z0-9-]+)+/\d+)'
-        matches1 = re.findall(pattern1, normalized_text, re.IGNORECASE)
-        if matches1:
-            print(f"  Pattern 1 matched: {matches1}")
-        references.update(matches1)
+SEBI circular numbers typically follow formats like:
+- SEBI/HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- HO/[DEPT]/[TYPE]/CIR/YYYY/NNN
+- [DEPT]/[TYPE]/CIR/YYYY/NNN
+- CIR/YYYY/NNN
 
-        # Pattern 2: Circular number format SEBI/HO/.../CIR/YYYY/NNN
-        pattern2 = r'SEBI/HO/[A-Z0-9]+(?:/[A-Z0-9-]+)*/(?:P/)?CIR/\d{4}/\d+'
-        matches2 = re.findall(pattern2, normalized_text, re.IGNORECASE)
-        if matches2:
-            print(f"  Pattern 2 matched: {matches2}")
-        references.update(matches2)
+Look for circular references that appear:
+- After phrases like "Circular No.", "Ref. No.", "Reference No."
+- In phrases like "dated [date]" following a circular number
+- In "Gazette Notification No."
+- References to other circulars in paragraphs
+- Anywhere in the text where a circular number appears
 
-        # Pattern 3: Short form without SEBI prefix but with HO/
-        pattern3 = r'(?:Circular\s+No\.?\s*:?\s*)?(HO/[A-Z0-9]+(?:/[A-Z0-9-]+)+/\d+)'
-        matches3 = re.findall(pattern3, normalized_text, re.IGNORECASE)
-        if matches3:
-            print(f"  Pattern 3 matched: {matches3}")
-        references.update(matches3)
+Return ONLY a JSON array of circular numbers found, one per line.
+If no circular references are found, return an empty array: []
 
-        # Pattern 4: Dated references like "dated November 22, 2024"
-        pattern4 = r'Circular\s+No\.?\s+([A-Z]{2,}/[A-Z0-9/-]+/\d+)\s+dated'
-        matches4 = re.findall(pattern4, normalized_text, re.IGNORECASE)
-        if matches4:
-            print(f"  Pattern 4 matched: {matches4}")
-        references.update(matches4)
+Example format:
+["SEBI/HO/DDHS/DDHS/CIR/P/2024/123", "HO/MIRSD/CRADT/CIR/P/2024/45", "CIR/2023/78"]
 
-        # Pattern 5: Gazette notification references
-        pattern5 = r'Gazette\s+Notifications?\s+No\.?\s+([A-Z]{2,}/[A-Z0-9/-]+/\d+)'
-        matches5 = re.findall(pattern5, normalized_text, re.IGNORECASE)
-        if matches5:
-            print(f"  Pattern 5 matched: {matches5}")
-        references.update(matches5)
+Text:
+{self.text_content}
 
-        # Pattern 6: Paragraph references to other circulars
-        pattern6 = r'(?:paragraph|para)\s+[\d.]+\s+of\s+(?:SEBI\s+)?Circular\s+(?:No\.?\s*)?([A-Z]{2,}/[A-Z0-9/-]+/\d+)'
-        matches6 = re.findall(pattern6, normalized_text, re.IGNORECASE)
-        if matches6:
-            print(f"  Pattern 6 matched: {matches6}")
-        references.update(matches6)
+Circular References (JSON array):"""
 
-        # Pattern 7: General SEBI circular number anywhere in text
-        pattern7 = r'\b(SEBI/HO/[A-Z]+(?:-[A-Z]+)?(?:/[A-Z0-9-]+)*/(?:P/)?CIR/\d{4}/\d+)\b'
-        matches7 = re.findall(pattern7, normalized_text, re.IGNORECASE)
-        if matches7:
-            print(f"  Pattern 7 matched: {matches7}")
-        references.update(matches7)
+            response = client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=2048,
+                messages=[
+                    {"role": "user", "content": prompt}
+                ]
+            )
 
-        # Pattern 8: Standalone circular numbers with various formats
-        pattern8 = r'\b(CIR/\d{4}/\d+)\b'
-        matches8 = re.findall(pattern8, normalized_text)
-        if matches8:
-            print(f"  Pattern 8 matched: {matches8}")
-        references.update(matches8)
+            response_text = response.content[0].text.strip()
+
+            # Parse the JSON response
+            # Try to extract JSON from the response
+            # Sometimes the model might wrap it in markdown code blocks or add explanatory text
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            else:
+                # Look for JSON array in the response (starts with [ and ends with ])
+                start_idx = response_text.find('[')
+                end_idx = response_text.rfind(']')
+                if start_idx != -1 and end_idx != -1:
+                    response_text = response_text[start_idx:end_idx+1]
+
+            try:
+                circular_refs = json.loads(response_text)
+                if isinstance(circular_refs, list):
+                    # Remove spaces from all references for consistency
+                    normalized_refs = [ref.replace(' ', '') for ref in circular_refs]
+                    references.update(normalized_refs)
+                    print(f"  Claude extracted {len(circular_refs)} circular references")
+                else:
+                    print("  Warning: Claude response was not a list")
+            except json.JSONDecodeError as je:
+                print(f"  Error parsing Claude JSON response: {je}")
+                print(f"  Response was: {response_text[:200]}")
+
+        except Exception as e:
+            print(f"Error extracting circular references with Claude: {e}")
 
         print(f"Found {len(references)} unique circular references")
         return references
@@ -173,9 +246,13 @@ class PDFCircularExtractor:
 
 def main():
     # Configuration
-    pdf_file = "1765535283954.pdf"
-    database_file = "sebi_circular_numbers.txt"
-    output_file = "circular_references_found.txt"
+    # Get the project root directory (parent of scripts directory)
+    script_dir = Path(__file__).parent
+    project_root = script_dir.parent
+
+    pdf_file = project_root / "1765535283954.pdf"
+    database_file = project_root / "sebi_circular_numbers.txt"
+    output_file = project_root / "circular_references_found.txt"
 
     print("=" * 80)
     print("SEBI Circular Reference Extractor")
@@ -183,11 +260,11 @@ def main():
     print()
 
     # Check if files exist
-    if not Path(pdf_file).exists():
+    if not pdf_file.exists():
         print(f"Error: PDF file '{pdf_file}' not found!")
         return
 
-    if not Path(database_file).exists():
+    if not database_file.exists():
         print(f"Error: Database file '{database_file}' not found!")
         return
 
@@ -203,9 +280,10 @@ def main():
     extractor.extract_text()
 
     # Debug: Save extracted text to file
-    with open("debug_extracted_text.txt", "w", encoding='utf-8') as f:
+    debug_file = project_root / "debug_extracted_text.txt"
+    with open(debug_file, "w", encoding='utf-8') as f:
         f.write(extractor.text_content)
-    print("Debug: Extracted text saved to debug_extracted_text.txt")
+    print(f"Debug: Extracted text saved to {debug_file}")
 
     # Get the circular number of the current PDF
     current_circular = extractor.get_circular_number()
@@ -215,16 +293,32 @@ def main():
     # Extract references
     all_references = extractor.extract_circular_references()
 
-    # Filter out references to the current circular itself
+    # Filter out references to the current circular itself (only exact matches)
     references = set()
-    current_circ_short = current_circular.split('(')[0] if '(' in current_circular else current_circular
-    current_circ_short = current_circ_short.split('-')[0].strip() if '-' in current_circ_short else current_circ_short
+
+    # Normalize current circular number for comparison
+    # Remove all non-alphanumeric characters for accurate matching
+    def normalize_circular_no(circ_no):
+        if not circ_no:
+            return ""
+        # Keep only alphanumeric characters
+        import re
+        normalized = re.sub(r'[^A-Z0-9]', '', circ_no.upper())
+        return normalized
+
+    current_circ_normalized = normalize_circular_no(current_circular)
 
     for ref in all_references:
-        # Skip if this reference matches the current circular
-        if current_circ_short in ref or ref in current_circ_short:
+        # Normalize reference for comparison
+        ref_normalized = normalize_circular_no(ref)
+
+        # Skip only if it's an exact match (same circular number)
+        # This allows references to other circulars from the same department
+        if current_circ_normalized and current_circ_normalized == ref_normalized:
             print(f"Skipping self-reference: {ref}")
-            continue
+            continue  # Skip self-reference
+
+        # Add all non-self references
         references.add(ref)
 
     if not references:
