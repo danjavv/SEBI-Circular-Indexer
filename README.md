@@ -1,10 +1,16 @@
+# SEBI Circular Knowledge Graph
+
+## Demo
+
 Demo Link - https://www.loom.com/share/dab4ceaf1c23481fb7a73dc1fd1f5e90
+
+## Overview
 
 Presently, the demo is running on 50 circulars from page 1 and 2 of the sebi circulars website
 to simplify the model. It could as well run on all circulars, around 2000 of them, but it would
-take too much time. I have used LLM APIs for the task - Anthropic Claude API KEY, like analyzing the scanned text of a PDF, extracting relevant information from the circulars, like references, title, data etc.
+take too much time. I have used LLM APIs for the task - Anthropic Claude API KEY, for analyzing the scanned text of a PDF, extracting relevant information from the circulars, like references, title, data etc.
 
-Tools used - No LLM APIs were used. The solution is entirely rule-based using:
+## Tools Used
 
   - PyPDF2 - PDF text extraction
   - Selenium + BeautifulSoup - Web scraping from SEBI website
@@ -14,10 +20,9 @@ Tools used - No LLM APIs were used. The solution is entirely rule-based using:
   (rule-based, not LLM-based)
   - Python - Core implementation language
 
+## Setup and Installation
 
-How to run:-
-
-1. Activate the virtual environment
+### 1. Activate the virtual environment
 
 ```bash
      cp .env.example .env
@@ -28,32 +33,36 @@ How to run:-
      source venv/bin/activate
 ```
 
-2. Install the dependencies
+### 2. Install the dependencies
 
 ```bash
      python3 -m pip install -r requirements.txt
 ```
 
-3. Run the files one by one 
+## Usage
+
+### Script 1: SEBI Circular Scraper 
 
 ```bash
      python3 sebi_circular_scraper.py
 ```
 
-What this file does?
+**What this file does:**
 
-  Scrapes circular metadata from the SEBI website using Selenium-powered 
-  browser automation. Navigates through paginated listings (109+ pages 
-  available), extracts circular titles and reference numbers from detail 
-  pages, and saves the data to sebi_circular_numbers.txt as a searchable 
+  Scrapes circular metadata from the SEBI website using Selenium-powered
+  browser automation. Navigates through paginated listings (109+ pages
+  available), extracts circular titles and reference numbers from detail
+  pages, and saves the data to sebi_circular_numbers.txt as a searchable
   database. Includes configurable page limits and rate limiting to be
-  respectful of server resources. 
+  respectful of server resources.
+
+### Script 2: Circular Reference Extractor
 
 ```bash
      python3 circular_reference_extractor.py
 ```
 
-What this file does?
+**What this file does:**
 
   Analyzes a single SEBI circular PDF to extract all references to other 
   circulars using 8 different regex patterns. Loads the circular database 
@@ -62,8 +71,7 @@ What this file does?
   (circular_references_found.txt) showing which references were matched in
   the database and which are external/unmatched.
 
-
-TO RUN THE CIRCULAR KNOWLEDGE GRAPH WORKFLOW - 
+### Script 3 & 4: Circular Knowledge Graph Workflow
 
 It builds a directed graph where each circular is a node and each reference creates a directed edge from the source circular to the referenced circular
 
@@ -72,7 +80,7 @@ It builds a directed graph where each circular is a node and each reference crea
      python3 visualize_circular_graph.py
 ```
 
-What these files do?
+**What these files do:**
 
   circular_knowledge_graph.py scans all PDF circulars in the circulars/ 
   directory, extracts references between them using llm and regex patterns, and
@@ -81,28 +89,30 @@ What these files do?
   
   visualize_circular_graph.py loads this graph data and generates visual network diagrams showing the full reference network, highlights top connected circulars, and produces statistical analysis charts with network metrics like degree distribution and connectivity.
 
-In the future, we could implement a script to download all the circulars from the website. Presently, my script was downloading the same circular over and over again so I downloaded the latest 50 circulars manually and kept them in circulars/ directory.
+**Note:** In the future, we could implement a script to download all the circulars from the website. Presently, my script was downloading the same circular over and over again so I downloaded the latest 50 circulars manually and kept them in circulars/ directory.
 
-NOW THE FINAL FILE - RUN THIS AFTER CREATING THE KNOWLEDGE GRAPH
+### Script 5: Analyze Circular References (Run after creating the knowledge graph)
 
 ```bash
      # Analyze a specific circular
     python3 analyze_circular_references.py circulars/1754651443956.pdf
 ```
 
-What this does?
+**What this does:**
 
 Analyzes a single SEBI circular PDF to discover all its direct and 
 indirect references by leveraging the knowledge graph. Extracts references
 using regex patterns, checks which ones exist in the knowledge graph, and
 traces multi-level dependency chains (references of references) up to 5 
-levels deep using BFS. Generates a reference tree visualization showing 
-the complete regulatory context and saves a detailed report to 
+levels deep using BFS. Generates a reference tree visualization showing
+the complete regulatory context and saves a detailed report to
 circular_reference_analysis.txt.
 
-ANALYSIS :-
+## Analysis
 
-Why running python3 analyze_circular_references.py circulars/1749727622982.PDF will show no indirect references:
+### Why Some PDFs Show No Indirect References
+
+**Example: `circulars/1749727622982.PDF`**
 
   - Direct references found: SEBI/HO/DDHS/DDHS_Div3/P/CIR/2021/672 and
   SEBI/HO/DDHS/DDHS_Div3/P/CIR/2021/690
@@ -111,7 +121,9 @@ Why running python3 analyze_circular_references.py circulars/1749727622982.PDF w
   references they make
   - Indirect references: None (because we don't have their PDFs)
 
-Why running python3 analyze_circular_references.py circulars/1758794128066.pdf showed indirect references:
+### Why Some PDFs Show Indirect References
+
+**Example: `circulars/1758794128066.pdf`**
 
   - Direct references found: SEBI/HO/ITD-1/ITD_VIAP/P/CIR/2025/111 and
   SEBI/HO/ITD-1/ITD_VIAP/P/CIR/2025/121
@@ -122,7 +134,7 @@ Why running python3 analyze_circular_references.py circulars/1758794128066.pdf s
   reference (level 2) via circular 121
   - Result: Complete reference chain shown in tree structure
 
-Graph Statistics:
+### Graph Statistics
 
   - Total edges: 56
   - Internal edges (point to circulars we have): 10
