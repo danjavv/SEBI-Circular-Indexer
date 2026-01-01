@@ -89,7 +89,6 @@ It builds a directed graph where each circular is a node and each reference crea
   
   visualize_circular_graph.py loads this graph data and generates visual network diagrams showing the full reference network, highlights top connected circulars, and produces statistical analysis charts with network metrics like degree distribution and connectivity.
 
-**Note:** In the future, we could implement a script to download all the circulars from the website. Presently, my script was downloading the same circular over and over again so I downloaded the latest 50 circulars manually and kept them in circulars/ directory.
 
 ### Script 5: Analyze Circular References (Run after creating the knowledge graph)
 
@@ -141,3 +140,17 @@ circular_reference_analysis.txt.
   - External edges (point to circulars we don't have): 46
 
 So 82% of references point to circulars outside our dataset (older circulars, gazette notifications, etc.), which is why most analyses won't show indirect references.
+
+### Script 6: SEBI Circular Downloader
+
+```bash
+     python3 download_sebi_pdfs.py
+```
+
+**What this file does:**
+
+  Presently, I have downloaded the latest 50 circulars manually and kept them in circulars/ directory and have used these pdfs to simulate the entire process. You could run this script and change the max_pages here to download as many pdfs you want and then simulate the entire process using these pdfs. I have not used many pdfs as the llm processing and creating the knowledge graph will use much time and will use up my Anthropic API credits (which I had bought for completing this project only)
+
+  ```bash
+  def get_circular_detail_links(driver: webdriver.Chrome, max_pages: int = 5) -> List[str]:
+  ```
