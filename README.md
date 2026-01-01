@@ -44,7 +44,7 @@ take too much time. I have used LLM APIs for the task - Anthropic Claude API KEY
 ### Script 1: SEBI Circular Scraper 
 
 ```bash
-     python3 sebi_circular_scraper.py
+     python3 scripts/sebi_circular_scraper.py
 ```
 
 **What this file does:**
@@ -59,7 +59,7 @@ take too much time. I have used LLM APIs for the task - Anthropic Claude API KEY
 ### Script 2: Circular Reference Extractor
 
 ```bash
-     python3 circular_reference_extractor.py
+     python3 scripts/circular_reference_extractor.py
 ```
 
 **What this file does:**
@@ -76,8 +76,8 @@ take too much time. I have used LLM APIs for the task - Anthropic Claude API KEY
 It builds a directed graph where each circular is a node and each reference creates a directed edge from the source circular to the referenced circular
 
 ```bash
-     python3 circular_knowledge_graph.py
-     python3 visualize_circular_graph.py
+     python3 scripts/circular_knowledge_graph.py
+     python3 scripts/visualize_circular_graph.py
 ```
 
 **What these files do:**
@@ -94,7 +94,7 @@ It builds a directed graph where each circular is a node and each reference crea
 
 ```bash
      # Analyze a specific circular
-    python3 analyze_circular_references.py circulars/1754651443956.pdf
+    python3 scripts/analyze_circular_references.py circulars/1754651443956.pdf
 ```
 
 **What this does:**
@@ -144,7 +144,7 @@ So 82% of references point to circulars outside our dataset (older circulars, ga
 ### Script 6: SEBI Circular Downloader
 
 ```bash
-     python3 download_sebi_pdfs.py
+     python3 scripts/download_sebi_pdfs.py
 ```
 
 **What this file does:**
