@@ -1,9 +1,5 @@
 # SEBI Circular Knowledge Graph
 
-## Demo
-
-Demo Link - https://www.loom.com/share/dab4ceaf1c23481fb7a73dc1fd1f5e90
-
 ## Overview
 
 Presently, the demo is running on 50 circulars from page 1 and 2 of the sebi circulars website
